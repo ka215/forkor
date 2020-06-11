@@ -1,0 +1,6 @@
+.htaccess
+*.log
+*.bak
+config.php
+functions.php
+vendor/
