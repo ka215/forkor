@@ -40,6 +40,13 @@ class Forkor
     protected $dbeq;
 
     /*
+     * The binary attribute value given to narrow condition of a specific column
+     * @access protected
+     * @var string
+     */
+    protected $binary_attr;
+
+    /*
      * State of ready database
      * @access protected
      * @var boolean
@@ -136,6 +143,13 @@ class Forkor
      * @var array<assoc>
      */
     protected $post_vars;
+
+    /*
+     * Array of response contents when responding in JSON format
+     * @access public
+     * @var array<assoc>
+     */
+    public $json_response = [];
 
     /*
      * Associative array for error handling
@@ -283,14 +297,13 @@ class Forkor
         $arg_list = func_get_args();
         unset( $arg_list[0] );
         if ( function_exists( $handler ) ) {
-            $response = call_user_func_array( $handler, $arg_list );
+            return call_user_func_array( $handler, $arg_list );
         } else
         if ( method_exists( $this, $handler ) ) {
-            $response = call_user_func_array( [ $this, $handler ], $arg_list );
+            return call_user_func_array( [ $this, $handler ], $arg_list );
         } else {
-            $response = null;
+            return func_get_arg( 1 );
         }
-        return ! empty( $response ) ? $response : func_get_arg( 1 );
     }
 
     /*
@@ -345,6 +358,10 @@ class Forkor
      * @param string $error_code (optional)
      */
     public function die( $error_code = null ) {
+        if ( ! empty( $this->json_response ) ) {
+            header( 'Content-Type: application/json; charset=utf-8' );
+            die( json_encode( $this->json_response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK ) );
+        } else
         if ( self::has_error( $error_code ) ) {
             die( self::get_error_messages( $error_code ) );
         } else {
@@ -364,7 +381,9 @@ class Forkor
                 $this->exec_time[] = microtime( true );
             }
             $total_exec_time = end( $this->exec_time ) - reset( $this->exec_time );
-            echo "<pre disabled><code>Total Execution Time: {$total_exec_time}ms</code></pre>" . PHP_EOL;
+            if ( empty( $this->json_response ) ) {
+                echo "<pre disabled><code>Total Execution Time: {$total_exec_time}ms</code></pre>" . PHP_EOL;
+            }
         }
     }
 

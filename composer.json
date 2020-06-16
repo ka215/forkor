@@ -3,5 +3,8 @@
         "psr-4": {
             "Forkor\\": "app/"
         }
+    },
+    "require": {
+        "fzaninotto/faker": "^1.9"
     }
 }

@@ -4,6 +4,8 @@ namespace Forkor;
 trait redirect
 {
 
+    public $redirect_to;
+
     /*
      * Respond as file not found
      * @access public
@@ -25,8 +27,8 @@ trait redirect
      * @access public
      */
     public function redirect() {
-        $redirect_to = self::get_redirect_url();
-        if ( ! $redirect_to ) {
+        $this->redirect_to = self::get_redirect_url( $this->location_id );
+        if ( ! $this->redirect_to ) {
             self::not_found();
         }
         
@@ -37,7 +39,7 @@ trait redirect
             header( 'Cache-Control: no-cache, must-revalidate' );
             header( 'Expires: Sat, 26 Jul 1997 05:00:00 GMT' );
             $http_code = $this->httppost ? 307 : 302;
-            header( 'Location: '. $redirect_to, true, $http_code );
+            header( 'Location: '. $this->redirect_to, true, $http_code );
         } else {
             $redirect_html  = <<<EOD
 <script>
@@ -48,9 +50,9 @@ meta2.httpEquiv = 'Cache-Control';
 meta2.content   = 'no-cache';
 document.getElementsByTagName('head')[0].appendChild(meta1);
 document.getElementsByTagName('head')[0].appendChild(meta2);
-window.location.href='{$redirect_to}';
+window.location.href='{$this->redirect_to}';
 </script>
-<noscript><meta http-equiv="Pragma" content="no-cache" /><meta http-equiv="Cache-control" content="no-cache" /><meta http-equiv="refresh" content="0;url={$redirect_to}" /></noscript>
+<noscript><meta http-equiv="Pragma" content="no-cache" /><meta http-equiv="Cache-control" content="no-cache" /><meta http-equiv="refresh" content="0;url={$this->redirect_to}" /></noscript>
 EOD;
             echo $redirect_html;
         }
@@ -65,8 +67,10 @@ EOD;
         if ( ! $this->current_logging ) {
             return;
         }
-        die( 'Logging!' );
-        
+        $referrer = array_key_exists( 'HTTP_REFERER', $_SERVER ) ? $_SERVER['HTTP_REFERER'] : '';
+        if ( ! self::add_log( $this->location_id, $referrer ) ) {
+            // Redirects that need to be logged, but if you can't log them
+        }
     }
 
 }

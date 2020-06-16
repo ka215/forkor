@@ -93,7 +93,13 @@ EOD;
     public function footer( $display_copyright = true, $add_inline_scripts = '' ) {
         $copyright = '';
         if ( $display_copyright ) {
-            $copyright = sprintf( '<p class="txt-darkgray">%s ver. %s powered by Forkor; &copy; 2020 MAGIC METHODS by <a href="https://ka2.org/">ka2</a></p>', APP_NAME, VERSION );
+            $repo_url  = 'https://github.com/ka215/forkor';
+            /*
+             * Filter handler: "display_author_footer"
+             * @since v1.0
+             */
+            $author    = self::call_filter( 'display_author_footer', ' by <a href="https://ka2.org/">ka2</a>' );
+            $copyright = sprintf( '<p class="txt-darkgray">Ver. %s powered by <a href="%s">Forkor</a>; &copy; 2020 MAGIC METHODS%s</p>', VERSION, $repo_url, $author );
         }
         if ( ! empty( $add_inline_scripts ) ) {
             if ( preg_match( '|^\<script.*?\>.*\</script\>$|s', $add_inline_scripts, $matches ) !== false && empty( $matches ) ) {

@@ -33,6 +33,44 @@ trait utils
     }
 
     /*
+     * Get the datetime string of a variable
+     * @access public
+     * @param mixed $var (optional) Defaults to 'now'
+     * @param string $timezone (optional) 
+     * @param string $format (optional) 
+     * @return mixed Returns the datetime string casted, returns null if cannot casted
+     */
+    public static function datetime_val( $var = 'now', $timezone = null, $format = null ) {
+        $now_date = new \DateTime();
+        $current_timezone = $now_date->getTimezone();
+        if ( empty( $timezone ) ) {
+            $timezone =$current_timezone->getName();
+        }
+        if ( empty( $format ) ) {
+            // Defaults to correspond to the datetime format of the database
+            $format = 'Y-m-d H:i:s';
+        }
+        if ( ! empty( $var ) && 'now' === strtolower( $var ) ) {
+            $var = '';
+        }
+        if ( ! is_null( $var ) && ! is_bool( $var ) && empty( $var ) ) {
+            $now_date->setTimezone( new \DateTimeZone( $timezone ) );
+            return $now_date->format( $format );
+        } else
+        if ( is_int( $var ) ) {
+            $now_date->setTimezone( new \DateTimeZone( $timezone ) );
+            $now_date->setTimestamp( $var );
+            return $now_date->format( $format );
+        } else
+        if ( self::is_datetime( $var ) ) {
+            $date = new \DateTime( $var, new \DateTimeZone( $timezone ) );
+            return $date->format( $format );
+        } else {
+            return null;
+        }
+    }
+
+    /*
      * Sanitize to URL-safe strings for location path
      * @access public
      * @param string $value (required)
@@ -203,7 +241,7 @@ trait utils
      * @return string
      */
     public function get_error_messages( $error_code = null, $delimiter = '<br>' ) {
-        $error_messages = self::get_errors( $error_code, false );
+        $error_messages = array_unique( self::get_errors( $error_code, false ) );
         return implode( $delimiter, $error_messages );
     }
 

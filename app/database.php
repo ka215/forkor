@@ -31,6 +31,7 @@ trait database
             self::tables_exists();
             $this->is_ready_db = true;
             $this->dbeq = 'mysql' === DB_DRIVER ? '`' : '';
+            $this->binary_attr = 'mysql' === DB_DRIVER ? ' BINARY' : '';
         }
     }
 
@@ -97,24 +98,31 @@ trait database
             if ( count( $_where ) == 3 && in_array( $_where[0], $table_columns, true ) ) {
                 switch ( $_where[0] ) {
                     case 'id':
+                        $where_clauses[] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
                         $prepare_vars[':'.$_where[0]] = (int) $_where[2];
                         break;
                     case 'logged':
+                        $where_clauses[] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
                         $prepare_vars[':'.$_where[0]] = (bool) $_where[2];
                         break;
                     case 'modified_at':
                     case 'created_at':
+                        $where_clauses[] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
                         if ( self::is_datetime( $_where[2] ) ) {
-                            $prepare_vars[':'.$_where[0]] = date_format( date_create( $_where[2] ), 'Y-m-d H:i:s' );
+                            $prepare_vars[':'.$_where[0]] = self::datetime_val( $_where[2] );
                         } else {
                             $prepare_vars[':'.$_where[0]] = (string) $_where[2];
                         }
                         break;
+                    case 'location_id':
+                        $where_clauses[] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].$this->binary_attr.' :'.$_where[0];
+                        $prepare_vars[':'.$_where[0]] = (string) $_where[2];
+                        break;
                     default:
+                        $where_clauses[] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
                         $prepare_vars[':'.$_where[0]] = (string) $_where[2];
                         break;
                 }
-                $where_clauses[] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
             }
         }
         unset( $_where );
@@ -192,24 +200,31 @@ trait database
             if ( count( $_where ) == 3 && in_array( $_where[0], $table_columns, true ) ) {
                 switch ( $_where[0] ) {
                     case 'id':
+                        $narrow_downs['where'][] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
                         $prepare_vars[':'.$_where[0]] = (int) $_where[2];
                         break;
                     case 'logged':
+                        $narrow_downs['where'][] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
                         $prepare_vars[':'.$_where[0]] = (bool) $_where[2];
                         break;
                     case 'modified_at':
                     case 'created_at':
+                        $narrow_downs['where'][] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
                         if ( self::is_datetime( $_where[2] ) ) {
-                            $prepare_vars[':'.$_where[0]] = date_format( date_create( $_where[2] ), 'Y-m-d H:i:s' );
+                            $prepare_vars[':'.$_where[0]] = self::datetime_val( $_where[2] );
                         } else {
                             $prepare_vars[':'.$_where[0]] = (string) $_where[2];
                         }
                         break;
+                    case 'location_id':
+                        $narrow_downs['where'][] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].$this->binary_attr.' :'.$_where[0];
+                        $prepare_vars[':'.$_where[0]] = (string) $_where[2];
+                        break;
                     default:
+                        $narrow_downs['where'][] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
                         $prepare_vars[':'.$_where[0]] = (string) $_where[2];
                         break;
                 }
-                $narrow_downs['where'][] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
             }
         }
         unset( $_where );
@@ -314,10 +329,10 @@ trait database
                         case 'created_at':
                         case 'modified_at':
                             if ( self::is_datetime( $_val ) ) {
-                                $prepare_vars[':'.$_col] = date_format( date_create( $_val ), 'Y-m-d H:i:s' );
+                                $prepare_vars[':'.$_col] = self::datetime_val( $_val );
                             } else
                             if ( 'CURRENT_TIMESTAMP' === strtoupper( $_val ) ) {
-                                $prepare_vars[':'.$_col] = date( 'Y-m-d H:i:s' );
+                                $prepare_vars[':'.$_col] = self::datetime_val();
                             } else {
                                 $prepare_vars[':'.$_col] = (string) $_val;
                             }
@@ -349,10 +364,10 @@ trait database
                             case 'created_at':
                             case 'modified_at':
                                 if ( self::is_datetime( $_val ) ) {
-                                    $prepare_vars[':ups_'.$_col] = date_format( date_create( $_val ), 'Y-m-d H:i:s' );
+                                    $prepare_vars[':ups_'.$_col] = self::datetime_val( $_val );
                                 } else
                                 if ( 'CURRENT_TIMESTAMP' === strtoupper( $_val ) ) {
-                                    $prepare_vars[':ups_'.$_col] = date( 'Y-m-d H:i:s' );
+                                    $prepare_vars[':ups_'.$_col] = self::datetime_val();
                                 } else {
                                     $prepare_vars[':ups_'.$_col] = (string) $_val;
                                 }
@@ -426,23 +441,30 @@ trait database
             $prepare_vars  = [];
             foreach ( $conditions as $_where ) {
                 if ( count( $_where ) == 3 && in_array( $_where[0], $table_columns, true ) ) {
-                    $where_clauses[] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
                     switch ( $_where[0] ) {
                         case 'id':
+                            $where_clauses[] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
                             $prepare_vars[':'.$_where[0]] = (int) $_where[2];
                             break;
                         case 'logged':
+                            $where_clauses[] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
                             $prepare_vars[':'.$_where[0]] = (bool) $_where[2];
                             break;
                         case 'modified_at':
                         case 'created_at':
+                            $where_clauses[] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
                             if ( self::is_datetime( $_where[2] ) ) {
-                                $prepare_vars[':'.$_where[0]] = date_format( date_create( $_where[2] ), 'Y-m-d H:i:s' );
+                                $prepare_vars[':'.$_where[0]] = self::datetime_val( $_where[2] );
                             } else {
                                 $prepare_vars[':'.$_where[0]] = (string) $_where[2];
                             }
                             break;
+                        case 'location_id':
+                            $where_clauses[] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].$this->binary_attr.' :'.$_where[0];
+                            $prepare_vars[':'.$_where[0]] = (string) $_where[2];
+                            break;
                         default:
+                            $where_clauses[] = $this->dbeq.$_where[0].$this->dbeq.' '.$_where[1].' :'.$_where[0];
                             $prepare_vars[':'.$_where[0]] = (string) $_where[2];
                             break;
                     }
@@ -608,7 +630,7 @@ trait database
                 case 'modified_at':
                     if ( ! empty( $_val ) && self::is_datetime( $_val ) ) {
                         $_ope = 'like' === strtolower( $operators[$_key] ) ? '=' : $operators[$_key];
-                        $fetch_conds[] = [ $_key, $_ope, date_format( date_create( $_val ), 'Y-m-d H:i:s' ) ];
+                        $fetch_conds[] = [ $_key, $_ope, self::datetime_val( $_val ) ];
                     }
                     break;
                 case 'order_by':
@@ -712,7 +734,7 @@ trait database
     public function is_usable_location_id( $location_id = null, $prevent_error = true ) {
         if ( ! isset( $location_id ) || empty( $location_id ) ) {
             if ( ! $prevent_error ) {
-                self::add_error( 'empty_location_id', 'There is no location id to check.' );
+                self::add_error( 'empty_location_id', 'There is no location path to check.' );
             }
             return false;
         }
@@ -737,5 +759,147 @@ trait database
         }
         return true;
     }
+
+    /*
+     * Insert new log to location_logs table
+     * @access public
+     * @param string $location_id (required) 
+     * @param string $referrer (optional) Defaults to null
+     * @return boolean
+     */
+    public function add_log( $location_id = '', $referrer = null ) {
+        if ( empty( $location_id ) ) {
+            return false;
+        }
+        if ( ! self::data_exists( 'locations', [ [ 'location_id', '=', $location_id ], [ 'logged', '=', true ] ] ) ) {
+            self::add_error( 'invalid_logging', 'There is invalid logging to locations that is not allowed.' );
+            return false;
+        }
+        $location_log_data = [
+            'location_id' => $location_id,
+            'referrer'    => empty( $referrer ) ? '' : $referrer,
+        ];
+        /*
+         * Filter handler: "add_location_log"
+         * @since v1.0
+         */
+        $location_log_data = self::call_filter( 'add_location_log', $location_log_data );
+        if ( ! empty( $location_log_data ) ) {
+            if ( empty( $this->dbh ) ) {
+                self::connect_db();
+            }
+            try {
+                return self::upsert_data( 'location_logs', $location_log_data, false );
+            } catch ( \PDOException $e ) {
+                if ( self::has_error( 'failure_upserting' ) ) {
+                    self::add_error( 'failure_upserting', $e->getMessage() );
+                } else {
+                    self::add_error( 'db_error', $e->getMessage() );
+                }
+            }
+        } else {
+            self::add_error( 'empty_location_log', 'There is not enough location log to add.' );
+            return false;
+        }
+    }
+
+    /*
+     * Retrieve the list of location IDs that have been logged
+     * @access public
+     * @param array<assoc> $sort (optional) Defaults to null therefore order by latest logging
+     * @param boolean $valid_ids_only (optional) Defaults to true; targeted only for currently valid location IDs if true, retrieve all location IDs logged if false.
+     * @param boolean $with_count_number (optional) Defaults to false
+     * @return array Returns array listed only location ids if $with_count_number is false (at default); returns assoc array that has with pair of location id and count logged if true.
+     */
+    public function get_logged_ids( $sort = null, $valid_ids_only = true, $with_count_number = false ) {
+        $logged_ids = [];
+        if ( empty( $sort ) ) {
+            $sort = [ 'id' => 'desc' ];
+        }
+        $_res = self::fetch_data( 'location_logs', 'location_id', [], null, $sort );
+        foreach ( $_res as $_val ) {
+            $_lid = $_val['location_id'];
+            if ( array_key_exists( $_lid, $logged_ids ) ) {
+                $logged_ids[$_lid]++;
+            } else {
+                $logged_ids[$_lid] = 1;
+            }
+        }
+        unset( $_lid, $_val, $_res );
+        if ( $valid_ids_only ) {
+            $_res = self::fetch_data( 'locations', 'location_id', [ 'logged', '=', true ] );
+            $current_valid_ids = array_map( function( $_val ) { return $_val['location_id']; }, $_res );
+            foreach ( $logged_ids as $_lid => $_cnt ) {
+                if ( ! in_array( $_lid, $current_valid_ids, true ) ) {
+                    unset( $logged_ids[$_lid] );
+                }
+            }
+            unset( $_cnt, $_lid, $_res );
+        }
+        if ( $with_count_number ) {
+            return $logged_ids;
+        } else {
+            return array_keys( $logged_ids );
+        }
+    }
+
+    /*
+     * Retrieve the specified location logs
+     * @access public
+     * @param string $location_id (optional) Defaults to null, in which case it will get all the logs. However, that is a performance deprecation.
+     * @return mixed If location id matches, return that list of logs. If not, it returns null.
+     */
+    public function get_logs( $location_id = null ) {
+        $condition = [];
+        if ( ! empty( $location_id ) ) {
+            $condition = [ 'location_id', '=', $location_id ];
+        }
+        $logs = self::fetch_data( 'location_logs', null, $condition );
+        if ( empty( $logs ) ) {
+            return null;
+        } else {
+            return $logs;
+        }
+    }
+
+    /*
+     * Aggregate the logs of a specific location ID for easy analysis
+     * @access public
+     * @param string $location_id (required)
+     * @return mixed Returns assoc array if location id matches, if not, it returns false.
+     */
+    public function aggregate_logs( $location_id = null ) {
+        if ( empty( $location_id ) ) {
+            return false;
+        }
+        $raw_logs = self::fetch_data( 'location_logs', [ 'referrer', 'created_at' ], [ 'location_id', '=', $location_id ] );
+        if ( ! empty( $raw_logs ) ) {
+            $log_details = [
+                'location_id' => $location_id,
+                'url'         => self::get_redirect_url( $location_id ),
+                'total'       => count( $raw_logs ),
+                'referrers'   => [],
+                'timestamps'  => [],
+                'accesses'    => [],
+            ];
+            foreach ( $raw_logs as $_onelog ) {
+                $_referrer = empty( $_onelog['referrer'] ) ? 'none' : trim( $_onelog['referrer'] );
+                if ( array_key_exists( $_referrer, $log_details['referrers'] ) ) {
+                    $log_details['referrers'][$_referrer]++;
+                } else {
+                    $log_details['referrers'][$_referrer] = 1;
+                }
+                if ( isset( $_onelog['created_at'] ) && self::is_datetime( $_onelog['created_at'] ) ) {
+                    $_epoctime = strtotime( $_onelog['created_at'] );
+                    $log_details['timestamps'][] = $_epoctime;
+                    $log_details['accesses'][$_referrer][] = $_epoctime;
+                }
+            }
+            return $log_details;
+        } else {
+            return false;
+        }
+    }
+
 
 }
