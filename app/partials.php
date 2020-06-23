@@ -45,11 +45,14 @@ trait partials {
 /* Internal CSS */
 html { overflow-x: hidden; }
 [data-standby="shown"] { visibility: hidden; opacity: 0; transition: opacity 0.3s linear; }
-body > * { margin: 0 auto; width: calc(100% - 2rem); max-width: 960px; }
+body > *:not(.dialog-backdrop) { margin: 0 auto; width: 100%; max-width: 960px; }
+#main { padding: 0 1rem; }
 .forkor-logo { position: relative; display: inline-block; width: 1em; height: 1em; margin-right: 0.5rem; line-height: 1.5; }
 .forkor-logo::after { position: absolute; content: ''; left: 50%; top: 50%; width: 100%; height: 100%; background-image: url(./assets/forkor.svg); background-size: contain; background-position: center center; background-repeat: no-repeat; transform: translate(-50%, -50%); }
 h1 .forkor-logo { margin-right: 1rem; }
 h1 .forkor-logo::after { top: calc((100% / 3) * 2); }
+.sloth-notify { top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; margin: auto !important; height: max-content !important; transform: none !important; }
+.sloth-notify * { -webkit-backface-visibility: hidden; backface-visibility: hidden; filter: blur(0); -webkit-filter: blur(0); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; outline: 1px solid transparent; }
 ${add_internal_styles}
 EOS;
         if ( ! empty( $internal_css ) ) {

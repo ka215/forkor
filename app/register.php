@@ -71,9 +71,16 @@ trait register
             }
             if ( $this->post_vars['committed'] ) {
                 if ( self::add_location( $this->post_vars['register_shorten_uri'], $this->post_vars['redirect_url'], $this->post_vars['is_logged'] ) ) {
-                    self::test( 'get_locations' );
+                    // Completion of registration
+                    $this->json_response = [
+                        'result' => $this->post_vars['register_shorten_uri'],
+                        'notice'  => sprintf( 'The location path %s has been registered as a new shortened URL.', '<code>'. $this->post_vars['register_shorten_uri'] .'</code>' ),
+                    ];
                 } else {
-                    
+                    $this->json_response = [
+                        'result' => '',
+                        'error'  => self::has_error() ? self::get_error_messages() : 'Invalid request.',
+                    ];
                 }
                 self::die();
             } else {
@@ -200,7 +207,7 @@ EOS;
             </div>
         </div>
         <div id="field-logging" class="w-full">
-            <label class="tgl flat" data-follow-color="inherit">Logged it when the generated shorten URI will be used.
+            <label class="tgl flat" data-follow-color="inherit">Logged when the shorten URI is used.
                 <input type="checkbox" name="is_logged" value="1"{$checked_logged}>
                 <span class="tgl-btn"></span>
             </label>
@@ -266,7 +273,29 @@ var init = function() {
             return false;
         } else {
             commitF.value = 1;
-            document.getElementById('register-form').submit();
+            //document.getElementById('register-form').submit();
+            var formData = new FormData(document.getElementById('register-form'));
+            fetch( '', {
+                method: 'POST',
+                body: formData,
+            }).then(function(response) {
+                if (response.ok) {
+                    //console.log( response.text() );
+                    return response.json();
+                }
+                throw new Error( 'Network response was invalid.' );
+                showDialog('Registration Failed', '<span class="txt-tert">Network response was invalid.</span>', 'Close', 1);
+            }).then(function(resJson) {
+                //console.log( resJson, resJson.error );
+                if ( Object.prototype.hasOwnProperty.call(resJson, 'notice') ) {
+                    showDialog('Registration Successful', '<span class="txt-sec">'+ resJson.notice +'</span>', {label:'Close', callback:function(){ location.replace('{$this->self_path}'); }}, 1);
+                } else {
+                    showDialog('Registration Failed', '<span class="txt-tert">'+ resJson.error +'</span>', 'Close', 1);
+                }
+            }).catch(function(error) {
+                console.error('There has been a problem with fetch operation: ', error.message);
+                showDialog('Registration Failed', '<span class="txt-tert">'+ error.message +'</span>', 'Close', 1);
+            });
         }
     }, false);
     
@@ -288,7 +317,7 @@ function checkNewLocationPath(evt) {
         return;
     }
     var formData = new FormData(document.getElementById('register-form'));
-    console.log('Do check: '+ evt.target.id, 'Event Type: '+ evt.type, formData);
+    //console.log('Do check: '+ evt.target.id, 'Event Type: '+ evt.type, formData);
     fetch( '', {
         method: 'POST',
         body: formData,

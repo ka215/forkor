@@ -263,14 +263,14 @@ class Forkor
         if ( REGISTER_PATH === $this->location_id ) {
             // Register shortener URL
             if ( ! empty( REGISTER_ALLOWED_IPS ) && ! in_array( $this->remote_addr, REGISTER_ALLOWED_IPS, true ) ) {
-                self::not_found( 'You can not register! ('. $this->remote_addr .')' );
+                self::not_found( '403 Forbidden' );// 'You can not register! ('. $this->remote_addr .')'
             }
             self::register();
         } else
         if ( ANALYZE_PATH === $this->location_id ) {
             // Analyze redirection via shorten URL
             if ( ! empty( ANALYZE_ALLOWED_IPS ) && ! in_array( $this->remote_addr, ANALYZE_ALLOWED_IPS, true ) ) {
-                self::not_found( 'You can not Analyze! ('. $this->remote_addr .')' );
+                self::not_found( '403 Forbidden' );// 'You can not Analyze! ('. $this->remote_addr .')'
             }
             self::analyze();
         } else {

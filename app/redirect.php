@@ -14,12 +14,13 @@ trait redirect
     public function not_found( $message = '' ) {
         header( 'Cache-Control: no-cache, must-revalidate' );
         header( 'Expires: Sat, 26 Jul 1997 05:00:00 GMT' );
-        header( 'HTTP/1.0 404 Not Found' );
         if ( ! empty( $message ) ) {
-            die( $message );
+            header( 'HTTP/1.1 '. $message );
+            //self::die( $message );
         } else {
-            exit;
+            header( 'HTTP/1.1 404 Not Found' );
         }
+        exit;
     }
 
     /*

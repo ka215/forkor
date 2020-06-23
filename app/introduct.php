@@ -50,8 +50,21 @@ EOS;
         <img src="./assets/forkor.svg" id="logo-image" class="w-1-3" alt="Forkor">
         <div id="introduce-content" data-switch-class="lg:w-2-3">
             <h2 id="h2-title" class="line-right txt-darkgray">What&#39;s the Forkor?</h2>
-            <textarea id="auto-indent-text" disabled>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sed nisl ultricies, luctus velit varius, gravida metus. Morbi vulputate orci id odio blandit fermentum. Aliquam justo dolor, volutpat in ornare accumsan, consequat et dolor. Sed gravida ullamcorper dui, in pellentesque nisi mollis eget. Aliquam erat volutpat. Nam ac enim hendrerit, placerat felis ut, lacinia felis. Maecenas efficitur felis sit amet nulla cursus, id commodo ex bibendum. Vestibulum in turpis id nibh aliquet sagittis.
-Quisque eget erat pretium, tincidunt quam at, dapibus nibh. Integer urna ante, tristique sit amet metus et, dignissim sodales enim. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vestibulum vestibulum eros vel neque accumsan, a accumsan eros feugiat. Curabitur ut sagittis turpis. Nam pretium sagittis dapibus. Aenean non enim sed urna tempus elementum vel non augue. Nulla facilisi. Aliquam in mauris ultrices neque hendrerit dignissim eget at leo. Cras lobortis condimentum lacinia. Nulla metus turpis, finibus at mi quis, venenatis porta arcu. Cras fringilla bibendum purus, ac vulputate mi sodales nec. Suspendisse sed nunc et turpis tempus tincidunt nec eget magna. Nam faucibus, ipsum vitae placerat placerat, risus lacus suscipit est, at auctor velit erat sit amet tellus.</textarea>
+            <textarea id="auto-indent-text" disabled>Forkor is a service that provides a shortened URL feature that allows you to redirect any URL with a short URL.<br>
+Shortened URL services are well known in the web world since they have been in use for a long time. Some of the most famous ones include "Google URL Shortener" and "Bit.ly" etc. However, the former service has already been discontinued and is not available to new users, while the latter is a paid service.<br>
+Also the use of third party shortened URL services can have the following risks.<br>
+<ul>
+<li>It becomes unavailable due to the termination or closure of that service provided.</li>
+<li>It becomes unusable or be restricted that service in violation of the Terms of Service.</li>
+<li>It is unclear whether the redirect is a trustworthy URL, which could lead to a phishing site or a source of virus infection.</li>
+</ul>
+Therefore, you can avoid these risks by setting up your own shortened URL service using Forkor.<br>
+You can use it permanently unless you terminate the service yourself, and there are no restrictions. Also, by using the same domain name as the host for the shortened URL, it is clear to all users that the redirected site is a URL registered and managed by that domain site, so there is no concern about the redirect destination.<br>
+<br>
+Best of all, Forkor is an open-source, so it&#39;s free to use forever.<br>
+<br>
+So, enjoy the best experience with Forkor.<br>
+</textarea>
             <p id="line-1"></p>
             <p id="line-2"></p>
             <p id="line-3"></p>
@@ -70,7 +83,8 @@ Quisque eget erat pretium, tincidunt quam at, dapibus nibh. Integer urna ante, t
     <div class="">
         <h3 class="txt-darkgray">Make Original Shorten URL</h3>
         <p>
-            Quisque commodo elit id orci efficitur, commodo aliquam urna fermentum. Nullam interdum faucibus leo, a sagittis urna ultricies ut. Aenean nec sapien lectus. Nullam ut massa at odio consectetur eleifend ut pretium tortor. Integer nisi neque, cursus non odio vitae, pretium sagittis erat. Quisque commodo lacinia eros sed ultricies. Praesent non ante eget nisi luctus sollicitudin.
+            Creating a shortened URL with the forkor is very easy. Forkor will automatically generate a shortened URL just by inputting the redirect URL on the registration page. Of course, you can customize it to your favorite URL.<br>
+            You can also restrict access to the registration screen. Forkor does not have complicated processes such as user authentication so that the life cycle of the application can be rotated as simply as possible, but it is possible to restrict access to the registration screen by the remote address of the connection source.<br>
         </p>
         <div class="mxa my2 txt-center">
             <button type="button" id="btn-register" class="clr-prim" data-goto="{$register_url}">Let Get Started Soon!</button>
@@ -80,15 +94,26 @@ Quisque eget erat pretium, tincidunt quam at, dapibus nibh. Integer urna ante, t
     <div class="">
         <h3 class="txt-darkgray">See Stats Used Your Shorten URL</h3>
         <p>
-            Aliquam varius, ex sit amet ultrices mattis, turpis augue tempus tellus, nec facilisis erat justo sit amet lacus. Donec vestibulum rhoncus porttitor. Duis lacus sem, aliquet sit amet mi et, porta dictum arcu. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc commodo erat quis dictum ultricies. Morbi viverra venenatis gravida. Praesent nibh felis, imperdiet at hendrerit vel, facilisis in lacus. Integer arcu urna, pharetra id nunc id, consequat vehicula ante. Fusce et turpis nec diam tristique sagittis. Vivamus blandit tristique orci, sed mollis magna pellentesque et. Nunc leo est, vehicula nec bibendum a, placerat ac turpis. Sed vehicula, mi sed ultricies posuere, libero leo fringilla eros, sit amet accumsan ante turpis at odio. Nunc quis dapibus enim. Suspendisse blandit id leo vel ultricies. Phasellus vitae sodales dui, a molestie felis.
+            By default, Forkor comes bundled with an analysis mode that checks the statistics of the shortened URLs used. For example, on the analytics page, you can see information such as the referrer of the shortened URL and the number of redirects that were logged when the redirect was performed on the shortened Forkor URL. This may allow you to get web marketing tips from the access status of the shortened URL.<br>
+            Of course, access to this analysis page can be restricted by the remote address of the connection source. If you forget to set these limits during installation, you can always update them by modifying the configuration file.<br>
         </p>
         <div class="mxa my2 txt-center">
             <button type="button" id="btn-analyze" data-goto="{$analyze_url}">Let Get Analyze!</button>
         </div>
     </div>
     <hr class="dotted">
-    <div class="mxa my2 txt-center">
-        <button type="button" id="btn-donation" data-goto="{$donation_url}">Your Donation Grows Forkor</button>
+    <div class="">
+        <h3 class="txt-darkgray">Your contributions are welcome!</h3>
+        <p>This application project is just the beginning. We would like to make it easier to use, improve it, and grow steadily.</p>
+        <ul>
+            <li>If there are any defects, malfunctions or any troubles, please let me know.</li>
+            <li>If you have a desired function, please request it.</li>
+            <li>Of course, making some donations will also help us.</li>
+        </ul>
+        <p>That is why we look for your cooperation.</p>
+        <div class="mxa my2 txt-center">
+            <button type="button" id="btn-donation" data-goto="{$donation_url}" class="clr-quat">Your Donation Grows Forkor</button>
+        </div>
     </div>
 </div>
 EOD;
