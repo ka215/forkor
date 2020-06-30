@@ -51,8 +51,12 @@ Now you're ready to go. Easy, right?
 
 This application project is just the beginning. We would like to make it easier to use, improve it, and grow steadily.
 
-* If there are any defects, malfunctions or any troubles, please let me know.
+* If there are any defects, malfunctions or any troubles, please let us know.
 * If you have a desired function, please request it.
 * Of course, making some donations will also help us.
 
 That is why we look for your cooperation.
+
+## 
+
+Code and documentation copyright 2020 the [ka2](https://ka2.org/forkor/). Code released under the [MIT License](https://raw.githubusercontent.com/ka215/forkor/master/LICENSE).
