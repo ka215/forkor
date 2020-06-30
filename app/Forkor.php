@@ -186,7 +186,8 @@ class Forkor
         if ( @file_exists( $this->config ) ) {
             require_once $config;
         } else {
-            die( '<b>Error</b>: Can not load config!' );
+            defined( 'DEBUG_MODE' ) or define( 'DEBUG_MODE', false );
+            die( '<div style="margin:auto;text-align:center"><h3>Does not exist configuration file of Forkor.</h3><a href="./install.php">Please Install Now!</a></div>' );
         }
 
         // Error Settings for debug

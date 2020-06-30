@@ -1,11 +1,15 @@
 <?php
-/* */
-ini_set( 'display_errors', 1 );
-ini_set( 'log_errors', 'On' );
-error_reporting( E_ALL );
-/* */
+/*
+ * Forkor application front. This file prepares the environment of the application,
+ * reads the external extension file, if any, and instantiates the application class.
+ *
+ * @package forkor
+ */
 
-// Define host hash
+// Forkor Application Preferences
+define( 'APP_NAME',         'Forkor' );
+define( 'VERSION',          '1.0' );
+define( 'APP_ROOT',         __DIR__ );
 define( 'FORKOR_HOST_HASH', sha1( $_SERVER['HTTP_HOST'] ) );
 
 // Loading if exists users custom functions file

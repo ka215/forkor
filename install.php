@@ -1,10 +1,28 @@
 <?php
 /*
- * Installer of the ".htaccess" for Forkor
+ * Installer for the Forkor
+ *
+ * @package forkor
  */
+function load_constants() {
+    $is_loaded = false;
+    if ( file_exists( __DIR__ . '/index.php' ) && $_tmp_index = @file_get_contents( __DIR__ . '/index.php' ) ) {
+        $_lines = explode( "\n", $_tmp_index );
+        foreach ( $_lines as $_line ) {
+            if ( strpos( $_line, 'define(' ) !== false ) {
+                eval( $_line );
+            }
+        }
+        if ( defined( 'APP_NAME' ) && defined( 'VERSION' ) && defined( 'APP_ROOT' ) && defined( 'FORKOR_HOST_HASH' ) ) {
+            $is_loaded = true;
+        }
+    }
+    if ( ! $is_loaded ) {
+        die( 'The Forkor installer could not ready. There is a problem with the file structure of the application. Please get the package again from the repository.' );
+    }
+}
 
-// Define host hash
-define( 'FORKOR_HOST_HASH', sha1( $_SERVER['HTTP_HOST'] ) );
+load_constants();
 
 require_once __DIR__ . '/config.prototype.php';
 
@@ -234,7 +252,7 @@ if ( $httppost ) {
     $internal_css = <<<EOS
 /* Internal CSS */
 [data-standby="shown"] { visibility: hidden; opacity: 0; transition: opacity 0.3s linear; }
-body > * { margin: 0 auto; width: calc(100% - 2rem); max-width: 960px; }
+body > *:not(.dialog-backdrop) { margin: 0 auto; width: 100%; max-width: 960px; }
 .forkor-logo { position: relative; display: inline-block; width: 1em; height: 1em; margin-right: 0.5rem; line-height: 1.5; }
 .forkor-logo::after { position: absolute; content: ''; left: 50%; top: 50%; width: 100%; height: 100%; background-image: url(./assets/forkor.svg); background-size: contain; background-position: center center; background-repeat: no-repeat; transform: translate(-50%, -50%); }
 EOS;
@@ -309,9 +327,17 @@ echo htmlspecialchars( $forkor_aconf ); ?></code></pre>
     <div class="my1">
     <p>Forkor works under <b>PHP</b>, <b>MySQL</b> and <b>Apache</b>. If your environment meets the requirements, please install.</p>
     <hr class="double">
-    <form method="post" id="forkor-installer" class="sloth-validation">
+    <form method="post" id="forkor-installer" class="sloth-validation" autocomplete="off">
         <p class="mb1">Forkor uses a database. Currently only MySQL is supported. Enter the information for the database that creates the table for Forkor.</p>
         <input type="hidden" name="dsn_prefix" value="mysql">
+        <div class="inline mb1">
+            <label for="dsn-prefix" class="m0 required" data-switch-class="sm:w-1-3,md:w-1-5,lg:w-1-6" />DB Driver</label>
+            <label for="dsn-prefix" class="m0" _data-switch-class="sm:w-2-3,md:w-2-5,lg:w-1-3">
+                <select id="dsn-prefix" name="dsn_prefix" class="m0" readonly>
+                    <option value="mysql">MySQL</option>
+                </select>
+            </label>
+        </div>
         <div class="inline mb1">
             <label for="db-name" class="m0 required" data-switch-class="sm:w-1-3,md:w-1-5,lg:w-1-6">DB Name</label>
             <input type="text" id="db-name" name="db_name" placeholder="Enter Database Name" class="m0" data-switch-class="sm:w-2-3,md:w-2-5,lg:w-1-3" required>
@@ -333,7 +359,10 @@ echo htmlspecialchars( $forkor_aconf ); ?></code></pre>
             <input type="text" id="db-charset" name="db_charset" placeholder="Enter Database Charset" value="utf8mb4" class="m0" data-switch-class="sm:w-2-3,md:w-2-5,lg:w-1-3" required>
         </div>
         <hr class="double">
-        <p class="mb1">Set the path name for registering the shortened URL and the path name for analyzing the usage history. It is possible to limit the IP address to connect to each path.</p>
+        <p class="mb1">
+            Set the path name for registering the shortened URL and the path name for analyzing the usage history. It is possible to limit the IP address to connect to each path.<br>
+            <small class="note mb2">By the way, the remote IP address of the environment you are currently connected to is <code><?= $_SERVER['REMOTE_ADDR'] ?></code>.</small>
+        </p>
         <div class="inline mb1">
             <label for="register-path" class="m0 required" data-switch-class="sm:w-1-3,md:w-1-5,lg:w-1-6">Register Path</label>
             <span class="mrh"><?= dirname( $_SERVER['REQUEST_URI'] ) . '/' ?></span>
@@ -360,7 +389,7 @@ echo htmlspecialchars( $forkor_aconf ); ?></code></pre>
             </label>
         </div>
         <hr class="double">
-        <p class="mb1">Forkor installation involves creating tables in the database, creating configuration files for applications, and creating / updating ".htaccess". When you are ready, click the "Install" button.</p>
+        <p class="mb1">Forkor installation involves creating tables in the database, creating configuration files for applications, and creating/updating ".htaccess". When you are ready, click the "Install" button.</p>
         <div class="inline mb1">
             <button type="submit" id="btn-install" class="w-full">Install</button>
         </div>

@@ -9,14 +9,8 @@ if ( ! defined( 'FORKOR_HOST_HASH' ) || FORKOR_HOST_HASH !== sha1( $_SERVER['HTT
     exit;
 }
 
-// Forkor Common Info.
-define( 'APP_NAME',   'Forkor' );
-define( 'VERSION',    '1.0' );
-define( 'APP_ROOT',   __DIR__ );
-define( 'DEBUG_MODE', false );
-
-// Database
-define( 'DB_DRIVER',  'mysql' );
+// Database Settings
+define( 'DB_DRIVER',  '#%dsn_prefix%#' );
 define( 'DB_NAME',    '#%db_name%#' );
 define( 'DB_USER',    '#%db_user%#' );
 define( 'DB_PASS',    '#%db_pass%#' );
@@ -27,7 +21,7 @@ define( 'DB_CHARSET', '#%db_charset%#' );
 define( 'REGISTER_PATH', '#%register_path%#' );
 $ips_allowed_to_register = [
     // IP addresses to allow; all allowed if empty
-    // c.f. $_SERVER['SERVER_ADDR'], '123.123.1.23', ...
+    // c.f. $_SERVER['SERVER_ADDR'], '123.123.4.56', ...
     '#%register_allowed_ips%#'
 ];
 define( 'REGISTER_ALLOWED_IPS', $ips_allowed_to_register );
@@ -36,7 +30,7 @@ define( 'REGISTER_ALLOWED_IPS', $ips_allowed_to_register );
 define( 'ANALYZE_PATH',  '#%analyze_path%#' );
 $ips_allowed_to_analyze = [
     // IP addresses to allow; all allowed if empty
-    // c.f. $_SERVER['SERVER_ADDR'], '123.123.1.23', ...
+    // c.f. $_SERVER['SERVER_ADDR'], '123.123.4.56', ...
     '#%analyze_allowed_ips%#'
 ];
 define( 'ANALYZE_ALLOWED_IPS', $ips_allowed_to_analyze );
@@ -44,4 +38,8 @@ define( 'ANALYZE_ALLOWED_IPS', $ips_allowed_to_analyze );
 // Forkor Index: Not Found if false
 define( 'SHOW_INDEX', '#%show_index%#' );
 
-// Shortener URL Generate Settings
+// Switching Debug Mode: Defaults to false as OFF
+define( 'DEBUG_MODE', false );
+
+// Other Advanced Settings
+// Not yet
