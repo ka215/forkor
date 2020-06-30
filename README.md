@@ -57,6 +57,6 @@ This application project is just the beginning. We would like to make it easier 
 
 That is why we look for your cooperation.
 
-## 
+## Copyright and license
 
 Code and documentation copyright 2020 the [ka2](https://ka2.org/forkor/). Code released under the [MIT License](https://raw.githubusercontent.com/ka215/forkor/master/LICENSE).
