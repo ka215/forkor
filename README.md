@@ -1,4 +1,4 @@
-# ![Forkor](assets/forkor.svg) Forkor
+# <img src="https://raw.githubusercontent.com/ka215/forkor/master/assets/forkor.svg" alt="Forkor" width="28" height="28" style="max-width:2em;max-height:2em;" /> Forkor
 
 ## What's Forkor?
 
