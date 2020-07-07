@@ -67,11 +67,9 @@ This application project is just the beginning. We would like to make it easier 
 
 * If there are any defects, malfunctions or any troubles, please let us know.
 * If you have a desired function, please request it.
-* Of course, making some donations will also help us.
+* Of course, [making some donations](https://github.com/sponsors/ka215) will also help us.
 
 That is why we look for your cooperation.
-
-<iframe src="https://github.com/sponsors/ka215/button" title="Sponsor ka215" height="35" width="107" style="border: 0;"></iframe>
 
 ## Copyright and license
 
