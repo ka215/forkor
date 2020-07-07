@@ -233,6 +233,7 @@ if ( $httppost ) {
 
     $install_completed = ( $created_tables && $created_config && $created_htaccess );
 }
+$current_path = rtrim( str_replace( $_SERVER['DOCUMENT_ROOT'], '', __DIR__ ), '/' ) . '/';
 ?>
 <!DOCTYPE html>
 <html>
@@ -365,7 +366,7 @@ echo htmlspecialchars( $forkor_aconf ); ?></code></pre>
         </p>
         <div class="inline mb1">
             <label for="register-path" class="m0 required" data-switch-class="sm:w-1-3,md:w-1-5,lg:w-1-6">Register Path</label>
-            <span class="mrh"><?= dirname( $_SERVER['REQUEST_URI'] ) . '/' ?></span>
+            <span class="mrh"><?= $current_path ?></span>
             <input type="text" id="register-path" name="register_path" placeholder="Enter Register Path" value="make" required>
         </div>
         <div class="inline mb1">
@@ -374,7 +375,7 @@ echo htmlspecialchars( $forkor_aconf ); ?></code></pre>
         </div>
         <div class="inline mb1">
             <label for="analyze-path" class="m0 required" data-switch-class="sm:w-1-3,md:w-1-5,lg:w-1-6">Analyze Path</label>
-            <span class="mrh"><?= dirname( $_SERVER['REQUEST_URI'] ) . '/' ?></span>
+            <span class="mrh"><?= $current_path ?></span>
             <input type="text" id="analyze-path" name="analyze_path" placeholder="Enter Analyze Path" value="analyze" required>
         </div>
         <div class="inline mb1">
