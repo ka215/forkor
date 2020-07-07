@@ -64,7 +64,7 @@ trait register
                 $this->post_vars['is_logged'] = false;
             }
             unset( $_is_delete, $_opts, $_val, $_key );
-            
+
             self::remove_error();
             if ( empty( $this->dbh ) ) {
                 self::connect_db();
@@ -98,7 +98,7 @@ trait register
     }
 
     /*
-     * 
+     *
      * @access protected
      * @return string
      */
@@ -151,6 +151,7 @@ trait register
         $required_self  = 'self' === $default_vars['generate_type'] ? 'required' : '';
         $checked_logged = $default_vars['is_logged'] ? ' checked="checked"' : '';
         $internal_styles = <<<EOS
+#more-content { -webkit-transition: all 0.3s linear; transition: all 0.3s linear; }
 #path-candidate { margin-right: 0; width: 16em; }
 .after-margin:not(.required)::after { content: ''; margin-right: 11.55px; }
 EOS;
@@ -162,8 +163,11 @@ EOS;
     <div class="flx-row flx-wrap item-start">
         <div class="w-full mb2">
             <h2 class="line-right txt-darkgray">Create Shorten URI</h2>
-            <p>
+            <p class="mb0">
                 First, enter the URL with the full address starting with "http(s)://..." that you want to redirect via the shortened URI.<br>
+            </p>
+            <div class="txt-center" data-switch-class="md:hidden,lg:hidden"><a class="learn-more" href="javascript:;" data-target="more-content">Learn More</a></div>
+            <p id="more-content" data-switch-class="sm:hidden">
                 Then, select the method for generating the shorten URI. There are two generation methods: <strong>Auto Generation</strong> by specifying the minimum and maximum character string lengths, and <strong>Self Generation</strong> that allows you to specify a free string.<br>
                 Only the single-byte alphanumeric and "_" and "-" symbols can be used for self-generation. In addition, uppercase and lowercase letters of the alphabet are distinguished, and up to 16 is maximum characters.<br>
                 Furthermore, when entering a self-generated URI path, it is checked whether it can be registered in real time. You cannot register a path that has already been registered or a word reserved by the application, so if the check is NG, change the path accordingly.<br>
@@ -231,17 +235,21 @@ EOD;
         echo $partial_main;
         $inline_scripts = <<<EOS
 var init = function() {
+    // Bind the event handler of learn more
+    document.querySelector('.learn-more').addEventListener('click', function(evt){
+        var targetElm = document.getElementById(evt.target.dataset.target);
+        evt.target.classList.add('hidden');
+        targetElm.classList.remove('hidden');
+    }, false);
+
     // Check whether is registrable the path of the shortened URI
     Array.prototype.forEach.call(document.querySelectorAll('[data-do-check]'), function(elm) {
         switch(elm.id) {
             case 'redirect-url':
-                //elm.addEventListener('paste', checkNewLocationPath, false);
                 elm.addEventListener('input', checkNewLocationPath, false);
-                //elm.addEventListener('blur', checkNewLocationPath, false);
                 break;
             case 'switch-generate-type-1':
             case 'switch-generate-type-2':
-                //toggleGenerationType(document.querySelector('input[name=generate_type]:checked').value);
                 elm.addEventListener('change', checkNewLocationPath, false);
                 break;
             case 'min-path-length':
@@ -249,12 +257,11 @@ var init = function() {
                 elm.addEventListener('input', checkNewLocationPath, false);
                 break;
             case 'path-candidate':
-                //elm.addEventListener('keypress', checkNewLocationPath, false);
                 elm.addEventListener('input', checkNewLocationPath, false);
                 break;
         }
     });
-    
+
     // Handle to toggle generate type
     Array.prototype.forEach.call(document.querySelectorAll('input[name=generate_type]'), function(elm) {
         elm.addEventListener('change', function(evt) {
@@ -263,30 +270,27 @@ var init = function() {
         }, false);
     });
     toggleGenerationType(document.querySelector('input[name=generate_type]:checked').value);
-    
+
     // Handler of "Commit & Register" button
     document.getElementById('btn-commit').addEventListener('click', function(evt) {
         var newPath = document.getElementById('new-register-shorten-uri'),
             commitF = document.getElementById('committed');
-        
+
         if ( '' === newPath.value ) {
             return false;
         } else {
             commitF.value = 1;
-            //document.getElementById('register-form').submit();
             var formData = new FormData(document.getElementById('register-form'));
             fetch( '', {
                 method: 'POST',
                 body: formData,
             }).then(function(response) {
                 if (response.ok) {
-                    //console.log( response.text() );
                     return response.json();
                 }
                 throw new Error( 'Network response was invalid.' );
                 showDialog('Registration Failed', '<span class="txt-tert">Network response was invalid.</span>', 'Close', 1);
             }).then(function(resJson) {
-                //console.log( resJson, resJson.error );
                 if ( Object.prototype.hasOwnProperty.call(resJson, 'notice') ) {
                     showDialog('Registration Successful', '<span class="txt-sec">'+ resJson.notice +'</span>', {label:'Close', callback:function(){ location.replace('{$this->self_path}'); }}, 1);
                 } else {
@@ -298,7 +302,7 @@ var init = function() {
             });
         }
     }, false);
-    
+
 };
 
 function checkNewLocationPath(evt) {
@@ -306,24 +310,21 @@ function checkNewLocationPath(evt) {
     var preview = document.getElementById('register-shorten-uri');
         newPath = document.getElementById('new-register-shorten-uri'),
         btnComt = document.getElementById('btn-commit');
-        //commitF = document.getElementById('committed');
     preview.classList.remove('txt-sec','txt-quat','fw500');
     preview.value = '';
     newPath.value = '';
     btnComt.classList.remove('clr-prim');
-    
+
     if ( document.getElementById('redirect-url').value === '' ||
        ( 'switch-generate-type-2' === evt.target.id && document.getElementById('path-candidate').value === '' ) ) {
         return;
     }
     var formData = new FormData(document.getElementById('register-form'));
-    //console.log('Do check: '+ evt.target.id, 'Event Type: '+ evt.type, formData);
     fetch( '', {
         method: 'POST',
         body: formData,
     }).then(function(response) {
         if (response.ok) {
-            //console.log( response.text() );
             return response.json();
         }
         throw new Error( 'Network response was invalid.' );
@@ -351,31 +352,25 @@ function toggleGenerationType(currentType) {
         minLbl = document.querySelector('[for=min-path-length]'),
         maxLbl = document.querySelector('[for=max-path-length]'),
         pathLb = document.querySelector('[for=path-candidate]');
-    
+
     if ( 'auto' === currentType ) {
         minLbl.classList.remove('muted');
-        //minLen.removeAttribute('disabled');
         minLen.removeAttribute('readonly');
         maxLbl.classList.remove('muted');
-        //maxLen.removeAttribute('disabled');
         maxLen.removeAttribute('readonly');
         pathLb.classList.remove('required');
         pathLb.classList.add('muted');
-        //pathCd.setAttribute('disabled', true);
         pathCd.setAttribute('readonly', true);
         pathCd.classList.remove('value-ok', 'value-ng');
         pathCd.removeAttribute('required');
         pathCd.value = '';
     } else {
         minLbl.classList.add('muted');
-        //minLen.setAttribute('disabled', true);
         minLen.setAttribute('readonly', true);
         maxLbl.classList.add('muted');
-        //maxLen.setAttribute('disabled', true);
         maxLen.setAttribute('readonly', true);
         pathLb.classList.add('required');
         pathLb.classList.remove('muted');
-        //pathCd.removeAttribute('disabled');
         pathCd.removeAttribute('readonly');
         pathCd.setAttribute('required', true);
     }

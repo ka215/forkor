@@ -43,16 +43,14 @@ trait partials {
         }
         $internal_css = <<<EOS
 /* Internal CSS */
-html { overflow-x: hidden; }
-[data-standby="shown"] { visibility: hidden; opacity: 0; transition: opacity 0.3s linear; }
-body > *:not(.dialog-backdrop) { margin: 0 auto; width: 100%; max-width: 960px; }
-#main { padding: 0 1rem; }
+html,body { box-sizing: border-box; overflow-x: hidden; width: 100vw; }
+[data-standby="shown"] { visibility: hidden !important; opacity: 0 !important; transition: opacity 0.3s linear; }
+body> pre[disabled] { position: relative; margin: 1rem auto; width: max-content !important; left: 0; top: 0; right: 0; bottom: 0; outline: 0; }
+#main { margin: 0 auto; padding: 0 1.1em; width: auto; max-width: 960px; }
 .forkor-logo { position: relative; display: inline-block; width: 1em; height: 1em; margin-right: 0.5rem; line-height: 1.5; }
 .forkor-logo::after { position: absolute; content: ''; left: 50%; top: 50%; width: 100%; height: 100%; background-image: url(./assets/forkor.svg); background-size: contain; background-position: center center; background-repeat: no-repeat; transform: translate(-50%, -50%); }
 h1 .forkor-logo { margin-right: 1rem; }
 h1 .forkor-logo::after { top: calc((100% / 3) * 2); }
-.sloth-notify { top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; margin: auto !important; height: max-content !important; transform: none !important; }
-.sloth-notify * { -webkit-backface-visibility: hidden; backface-visibility: hidden; filter: blur(0); -webkit-filter: blur(0); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; outline: 1px solid transparent; }
 ${add_internal_styles}
 EOS;
         if ( ! empty( $internal_css ) ) {
@@ -75,7 +73,7 @@ EOS;
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
     <meta name="description" content="Forkor generates the shorten URL from entered something URL">
-    <link rel="stylesheet" href="./assets/sloth.min.css">
+    <link rel="stylesheet" href="./assets/sloth.min.css?v=1.5.1">
     <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="144x144" href="./assets/apple-touch-icon-144x144.png">
@@ -113,7 +111,7 @@ EOD;
     <footer class="txt-center">
         {$copyright}
     </footer>
-    <script async src="./assets/sloth.extension.min.js"></script>
+    <script async src="./assets/sloth.extension.min.js?v=1.5.1"></script>
     {$add_inline_scripts}
 </body>
 </html>

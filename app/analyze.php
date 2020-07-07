@@ -76,12 +76,6 @@ trait analyze
                 $_tmp = self::aggregate_logs( $this->post_vars['location_id'] );
                 $result = $_tmp['referrers'];
                 arsort( $result, SORT_NUMERIC );
-                /*
-                $total = array_sum( $result );
-                foreach ( $result as $_key => $_val ) {
-                    $result[$_key] = round( ( $_val / $total * 100 ), 2 );
-                }
-                */
             } else {
                 self::add_error( 'invalid_post', 'Posted no location ID.' );
             }
@@ -103,7 +97,7 @@ trait analyze
             }
             $this->analyze_total_logged_locations = count( $logged_ids );
             unset( $_tmp, $_cnt, $_lid );
-            
+
             self::send_header( true );
             self::view_analyze();
         }
@@ -198,15 +192,11 @@ EOS;
 EOD;
         echo $partial_main;
         $location_root_uri = str_replace( ANALYZE_PATH, '', $this->request_uri );
-        
+
         $inline_scripts = <<<EOS
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script async src="https://www.gstatic.com/charts/loader.js"></script>
 <script>
 var init = function() {
-    // Load google charts
-    //google.charts.load('current', {'packages':['corechart']});
-    //google.charts.setOnLoadCallback(drawChart);
-    
     Array.prototype.forEach.call(document.querySelectorAll('.link2count-up'), function(elm) {
         elm.addEventListener('click', confirmCountUpLink, false);
     });
@@ -216,7 +206,7 @@ var init = function() {
     Array.prototype.forEach.call(document.querySelectorAll('.btn-referrers'), function(elm) {
         elm.addEventListener('click', infoReferrers, false);
     });
-    
+
 };
 function confirmCountUpLink(evt) {
     evt.preventDefault();
@@ -238,31 +228,29 @@ function infoReferrers(evt) {
         lead_text = 'Referrers when the shorten URL <small><code>{$location_root_uri}'+ lid +'</code></small> is used.',
         content   = '',
         formData  = new FormData();
-    
+
     formData.append('location_id', lid);
-    
+
     fetch( '{$this->self_path}', {
         method: 'POST',
         body: formData,
     }).then(function(response) {
         if (response.ok) {
-            //console.log( response.text() );
             return response.json();
         }
         throw new Error( 'Network response was invalid.' );
     }).then(function(resJson) {
-        //content = createPieChart(resJson.result);
         content = '<div id="piechart"></div>';
         footer  = '<div class="txt-right"><small class="muted">Powered by Google Charts</small></div>';
         showDialog('Referrer Information', '<p>'+ lead_text +'</p>'+ content + footer, 'Close', 1);
-        
+
         // Load google charts
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(function(){
             var chartData = [['Referrer','Count']],
                 chartSize = document.getElementById('piechart').clientWidth,
                 options = {width:chartSize, height:round(chartSize/2,2), chartArea:{left:0,top:0,width:'100%',height:'100%'}, is3D:true, legend:'none'};
-            
+
             for( _k in resJson.result ) {
                 chartData.push([_k, resJson.result[_k]]);
             }
@@ -271,18 +259,6 @@ function infoReferrers(evt) {
     }).catch(function(error) {
         console.error('There has been a problem with fetch operation: ', error.message);
     });
-}
-function array_sum(arr) {
-    var key,sum = 0;
-    if (typeof arr !== 'object') {
-        return null;
-    }
-    for (key in arr) {
-        if (!isNaN(parseFloat(arr[key]))) {
-            sum += parseFloat(arr[key]);
-        }
-    }
-    return sum;
 }
 function round(number, precision) {
     var shift = function(number, precision, reverseShift) {
@@ -294,31 +270,7 @@ function round(number, precision) {
     };
     return shift(Math.round(shift(number, precision, false)), precision, true);
 }
-function createPieChart(data) {
-    var ranges = [],
-        style  = '',
-        total  = array_sum(data),
-        colors = [ '#4e79a7', '#f28e2c', '#e15759', '#76b7b2', '#59a14f', '#edc949', '#4e79a7', '#f28e2c', '#e15759', '#76b7b2', '#59a14f', '#edc949' ],
-        offset = 0,
-        cnt    = 0;
-    for( key in data ) {
-        var percent = round((data[key] / total * 100), 2);
-        offset += percent;
-        if ( data.length - 1 === cnt || offset > 99 ) {
-            offset = 100;
-        } else {
-            offset = round( offset, 2 );
-        }
-console.log([ data[key], percent, offset, key ]);
-        ranges.push(colors[cnt] +' 0, '+ colors[cnt] +' '+ offset +'%');
-        cnt++;
-    }
-console.log(ranges);
-    style = 'background:radial-gradient(circle closest-side,transparent 75%,white 0),conic-gradient('+ranges.join(',')+');';
-    return '<div class="pie-chart" style="'+style+'"></div>';
-}
 function drawChart(chartData, options) {
-    // console.log(chartData, options);
     var data = google.visualization.arrayToDataTable(chartData),
         chart = new google.visualization.PieChart(document.getElementById('piechart'));
     chart.draw(data, options);
