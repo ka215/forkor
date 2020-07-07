@@ -33,7 +33,7 @@ Where you want to install Forkor on your own host or domain site, you should fet
 
 ```
 $ cd {Install Path}
-$ git clone https://github.com/ka215/forkor.git
+$ git clone https://github.com/ka215/forkor.git .
 $ composer install
 ```
 
