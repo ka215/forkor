@@ -57,6 +57,10 @@ The main features of Forkor are as follows:
 
 These are all available after installation.
 
+## Let's try it on the demonstration site
+
+[https://forkor.ka2.org/](https://forkor.ka2.org/)
+
 ## Customize Forkor for yourself!
 
 More details will be forthcoming.
